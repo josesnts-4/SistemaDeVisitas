@@ -1,12 +1,16 @@
-package com.inter.controller;
+package com.inter.SistemaDeVisitas.controller;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class HomeController {
     @GetMapping("/")
-    public String home() {
-        return "OK - SistemaDeVisitas";
-    }
+    public String index() { return "login"; }
+
+    @GetMapping("/home")
+    public String home() { return "home"; }
+
+    @GetMapping("/login")
+    public String login() { return "login"; }
 }
