@@ -1,4 +1,3 @@
-// src/main/java/com/inter/SistemaDeVisitas/security/SecurityConfig.java
 package com.inter.SistemaDeVisitas.security;
 
 import org.springframework.context.annotation.Bean;
@@ -15,46 +14,38 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+  @Bean
+  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    http
+      .csrf(csrf -> csrf.disable()) // simples p/ começar; com CSRF, ver passo 3
+      .cors(Customizer.withDefaults())
+      .authorizeHttpRequests(auth -> auth
+        .requestMatchers("/", "/login", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
+        .requestMatchers(HttpMethod.GET, "/home").authenticated()
+        .anyRequest().authenticated()
+      )
+      .formLogin(form -> form
+        .loginPage("/login")              // GET
+        .loginProcessingUrl("/login")     // POST do form
+        .defaultSuccessUrl("/home", true)
+        .failureUrl("/login?error")
+        .permitAll()
+      )
+      .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll());
 
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-          .csrf(csrf -> csrf.disable())
-          .cors(Customizer.withDefaults())
-          .authorizeHttpRequests(auth -> auth
-              .requestMatchers("/", "/login", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
-              .requestMatchers(HttpMethod.GET, "/home").authenticated()
-              .anyRequest().authenticated()
-          )
-          .formLogin(form -> form
-              .loginPage("/login")
-              .loginProcessingUrl("/login")
-              .defaultSuccessUrl("/home", true)
-              .failureUrl("/login?error")
-              .permitAll()
-          )
-          .logout(logout -> logout
-              .logoutUrl("/logout")
-              .logoutSuccessUrl("/login?logout")
-              .permitAll()
-          );
+    return http.build();
+  }
 
-        return http.build();
-    }
+  // Usuário de teste (trocar por JPA depois)
+  @Bean
+  UserDetailsService userDetailsService(PasswordEncoder encoder) {
+    return new InMemoryUserDetailsManager(
+      User.withUsername("admin@quitandaria.com")
+          .password(encoder.encode("123456"))
+          .roles("ADMIN")
+          .build()
+    );
+  }
 
-    // Usuário de teste (fica ativo também em prod)
-    @Bean
-    UserDetailsService userDetailsService(PasswordEncoder encoder) {
-        return new InMemoryUserDetailsManager(
-            User.withUsername("admin@quitandaria.com")
-                .password(encoder.encode("123456"))
-                .roles("ADMIN")
-                .build()
-        );
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 }
