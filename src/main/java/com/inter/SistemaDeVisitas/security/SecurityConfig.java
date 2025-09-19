@@ -1,3 +1,4 @@
+// src/main/java/com/inter/SistemaDeVisitas/security/SecurityConfig.java
 package com.inter.SistemaDeVisitas.security;
 
 import org.springframework.context.annotation.Bean;
@@ -14,10 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
+
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-      .csrf(csrf -> csrf.disable()) // simples p/ começar; com CSRF, ver passo 3
+      // CSRF permanece ATIVO (padrão) — seu form já envia o token
       .cors(Customizer.withDefaults())
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/", "/login", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
@@ -25,18 +27,22 @@ public class SecurityConfig {
         .anyRequest().authenticated()
       )
       .formLogin(form -> form
-        .loginPage("/login")              // GET
-        .loginProcessingUrl("/login")     // POST do form
-        .defaultSuccessUrl("/home", true)
-        .failureUrl("/login?error")
+        .loginPage("/login")                 // GET da sua página
+        .loginProcessingUrl("/login")        // POST do form (action)
+        .defaultSuccessUrl("/home", true)    // pra onde vai após logar
+        .failureUrl("/login?error")          // erro → volta com ?error
         .permitAll()
       )
-      .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/login?logout").permitAll());
+      .logout(l -> l
+        .logoutUrl("/logout")
+        .logoutSuccessUrl("/login?logout")
+        .permitAll()
+      );
 
     return http.build();
   }
 
-  // Usuário de teste (trocar por JPA depois)
+  // Usuário de teste (troque por JDBC/JPA depois)
   @Bean
   UserDetailsService userDetailsService(PasswordEncoder encoder) {
     return new InMemoryUserDetailsManager(
