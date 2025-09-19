@@ -1,3 +1,4 @@
+// src/main/java/com/inter/SistemaDeVisitas/security/SecurityConfig.java
 package com.inter.SistemaDeVisitas.security;
 
 import org.springframework.context.annotation.Bean;
@@ -18,30 +19,30 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(Customizer.withDefaults())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/css/**", "/js/**", "/img/**", "/actuator/health").permitAll()
-                .requestMatchers(HttpMethod.GET, "/home").authenticated()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")                 // sua página de login (GET)
-                .loginProcessingUrl("/login")        // endpoint que recebe o POST
-                .defaultSuccessUrl("/home", true)    // pra onde vai ao logar
-                .failureUrl("/login?error")          // volta com erro
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll()
-            );
+          .csrf(csrf -> csrf.disable())
+          .cors(Customizer.withDefaults())
+          .authorizeHttpRequests(auth -> auth
+              .requestMatchers("/", "/login", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
+              .requestMatchers(HttpMethod.GET, "/home").authenticated()
+              .anyRequest().authenticated()
+          )
+          .formLogin(form -> form
+              .loginPage("/login")
+              .loginProcessingUrl("/login")
+              .defaultSuccessUrl("/home", true)
+              .failureUrl("/login?error")
+              .permitAll()
+          )
+          .logout(logout -> logout
+              .logoutUrl("/logout")
+              .logoutSuccessUrl("/login?logout")
+              .permitAll()
+          );
 
         return http.build();
     }
 
-    // Usuário de teste (troque depois por JPA/JDBC)
+    // Usuário de teste (fica ativo também em prod)
     @Bean
     UserDetailsService userDetailsService(PasswordEncoder encoder) {
         return new InMemoryUserDetailsManager(
