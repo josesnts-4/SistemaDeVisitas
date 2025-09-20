@@ -1,4 +1,3 @@
-// src/main/java/com/inter/SistemaDeVisitas/security/SecurityConfig.java
 package com.inter.SistemaDeVisitas.security;
 
 import org.springframework.context.annotation.Bean;
@@ -19,18 +18,21 @@ public class SecurityConfig {
   @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-      // CSRF permanece ATIVO (padrão) — seu form já envia o token
+      // CSRF ligado (padrão). Se o seu form não tiver o token, adicione o input hidden (ver login.html).
       .cors(Customizer.withDefaults())
       .authorizeHttpRequests(auth -> auth
+        // páginas públicas
         .requestMatchers("/", "/login", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
+        // /home exige autenticação
         .requestMatchers(HttpMethod.GET, "/home").authenticated()
+        // qualquer outra rota exige login
         .anyRequest().authenticated()
       )
       .formLogin(form -> form
         .loginPage("/login")                 // GET da sua página
-        .loginProcessingUrl("/login")        // POST do form (action)
-        .defaultSuccessUrl("/home", true)    // pra onde vai após logar
-        .failureUrl("/login?error")          // erro → volta com ?error
+        .loginProcessingUrl("/login")        // POST do form
+        .defaultSuccessUrl("/home", true)    // após logar com sucesso
+        .failureUrl("/login?error")          // falha volta pro login com aviso
         .permitAll()
       )
       .logout(l -> l
@@ -42,7 +44,7 @@ public class SecurityConfig {
     return http.build();
   }
 
-  // Usuário de teste (troque por JDBC/JPA depois)
+  // Usuário de teste (trocar por JDBC/JPA depois)
   @Bean
   UserDetailsService userDetailsService(PasswordEncoder encoder) {
     return new InMemoryUserDetailsManager(
@@ -53,5 +55,8 @@ public class SecurityConfig {
     );
   }
 
-  @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }
