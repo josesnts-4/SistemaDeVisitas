@@ -27,7 +27,7 @@ public class User {
     @Column(nullable=false)
     private boolean enabled = true;
 
-    @Column(nullable=false)
+    @Column(nullable=false, updatable=false)
     private Instant createdAt = Instant.now();
 
     // Getters e Setters
@@ -46,6 +46,7 @@ public class User {
     public RoleGroup getRoleGroup() { return roleGroup; }
     public void setRoleGroup(RoleGroup roleGroup) { this.roleGroup = roleGroup; }
 
+    // Aqui está o getter/setter que garante compatibilidade com Spring Security
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
