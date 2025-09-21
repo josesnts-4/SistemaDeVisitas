@@ -1,3 +1,4 @@
+import com.inter.SistemaDeVisitas.entity.User;
 package com.inter.SistemaDeVisitas.security;
 
 import com.inter.SistemaDeVisitas.entity.User;
@@ -23,3 +24,4 @@ public class JpaUserDetailsService implements UserDetailsService {
     );
   }
 }
+
