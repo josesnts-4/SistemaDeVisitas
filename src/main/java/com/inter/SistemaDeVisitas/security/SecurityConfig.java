@@ -5,58 +5,40 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class SecurityConfig {
 
   @Bean
+  PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+
+  @Bean
   SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-      // CSRF ligado (padrão). Se o seu form não tiver o token, adicione o input hidden (ver login.html).
       .cors(Customizer.withDefaults())
       .authorizeHttpRequests(auth -> auth
-        // páginas públicas
-        .requestMatchers("/", "/login", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
-        // /home exige autenticação
+        .requestMatchers("/", "/login", "/register", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
+        .requestMatchers("/admin/**").hasRole("SUPER")
         .requestMatchers(HttpMethod.GET, "/home").authenticated()
-        // qualquer outra rota exige login
         .anyRequest().authenticated()
       )
       .formLogin(form -> form
-        .loginPage("/login")                 // GET da sua página
-        .loginProcessingUrl("/login")        // POST do form
-        .defaultSuccessUrl("/home", true)    // após logar com sucesso
-        .failureUrl("/login?error")          // falha volta pro login com aviso
+        .loginPage("/login")
+        .loginProcessingUrl("/login")
+        .defaultSuccessUrl("/home", true)
+        .failureUrl("/login?error")
         .permitAll()
       )
+      // permite link <a href="/logout"> (GET). Se preferir POST, remova a linha do matcher.
       .logout(l -> l
-        .logoutUrl("/logout")
+        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
         .logoutSuccessUrl("/login?logout")
         .permitAll()
       );
-
     return http.build();
-  }
-
-  // Usuário de teste (trocar por JDBC/JPA depois)
-  @Bean
-  UserDetailsService userDetailsService(PasswordEncoder encoder) {
-    return new InMemoryUserDetailsManager(
-      User.withUsername("admin@quitandaria.com")
-          .password(encoder.encode("123456"))
-          .roles("ADMIN")
-          .build()
-    );
-  }
-
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
   }
 }
