@@ -110,5 +110,31 @@
       </plugin>
     </plugins>
   </build>
-
+<profiles>
+  <profile>
+    <id>production</id>
+    <properties>
+      <!-- pula testes no build de produção -->
+      <maven.test.skip>true</maven.test.skip>
+      <!-- força Java 21 no profile, se quiser -->
+      <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+    <build>
+      <plugins>
+        <!-- opcional: garante empacotamento com repackage -->
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <goals>
+                <goal>repackage</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </build>
+  </profile>
+</profiles>
 </project>
