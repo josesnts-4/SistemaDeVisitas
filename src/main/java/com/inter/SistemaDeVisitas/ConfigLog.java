@@ -1,19 +1,15 @@
-package com.inter.SistemaDeVisitas;
+package com.inter.SistemaDeVisitas.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 @Configuration
 public class ConfigLog {
 
-  @Bean
-  public CommonsRequestLoggingFilter requestLoggingFilter() {
-    CommonsRequestLoggingFilter f = new CommonsRequestLoggingFilter();
-    f.setIncludeClientInfo(true);
-    f.setIncludeQueryString(true);
-    f.setIncludePayload(true);
-    f.setMaxPayloadLength(10000);
-    return f;
-  }
+    @Bean
+    public Logger logger() {
+        return LoggerFactory.getLogger("SistemaDeVisitas");
+    }
 }
