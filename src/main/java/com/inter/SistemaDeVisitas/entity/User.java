@@ -1,61 +1,46 @@
 package com.inter.SistemaDeVisitas.entity;
 
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
-import java.util.List;
+import java.time.Instant;
 
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
-public class User implements UserDetails {
+public class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+    @Column(nullable=false)
+    private String fullName;
 
-  @Column(nullable = false)
-  private String password;
+    @Column(nullable=false, unique=true)
+    private String email;
 
-  @Column(nullable = false)
-  private boolean enabled = true;
+    @Column(nullable=false)
+    private String password;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "role_group", nullable = false) // <- se no seu SQL é "rolegroup", troque para name="rolegroup"
-  private RoleGroup roleGroup = RoleGroup.LOJA;   // <- use uma constante QUE EXISTE no seu enum (LOJA/ADMIN/COMERCIAL)
-  // Se você adicionou USER ao enum, pode deixar RoleGroup.USER aqui.
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false, length=16)
+    private RoleGroup roleGroup; // <- sem default aqui
 
-  public User() {} // construtor padrão exigido pelo JPA
+    @Column(nullable=false)
+    private boolean enabled = true;
 
-  // ===== UserDetails =====
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of(new SimpleGrantedAuthority("ROLE_" + roleGroup.name()));
-  }
-  @Override public String getUsername() { return email; }
-  @Override public String getPassword() { return password; }
-  @Override public boolean isAccountNonExpired() { return true; }
-  @Override public boolean isAccountNonLocked() { return true; }
-  @Override public boolean isCredentialsNonExpired() { return true; }
-  @Override public boolean isEnabled() { return enabled; }
+    @Column(nullable=false, updatable=false)
+    private Instant createdAt = Instant.now();
 
-  // ===== Getters/Setters =====
-  public Long getId() { return id; }
-  public void setId(Long id) { this.id = id; }
+    // Getters/Setters...
+    public Long getId() { return id; } public void setId(Long id) { this.id = id; }
+    public String getFullName() { return fullName; } public void setFullName(String v) { this.fullName = v; }
+    public String getEmail() { return email; } public void setEmail(String v) { this.email = v; }
+    public String getPassword() { return password; } public void setPassword(String v) { this.password = v; }
+    public RoleGroup getRoleGroup() { return roleGroup; } public void setRoleGroup(RoleGroup v) { this.roleGroup = v; }
+    public boolean isEnabled() { return enabled; } public void setEnabled(boolean v) { this.enabled = v; }
+    public Instant getCreatedAt() { return createdAt; } public void setCreatedAt(Instant v) { this.createdAt = v; }
 
-  public String getEmail() { return email; }
-  public void setEmail(String email) { this.email = email; }
-
-  public void setPassword(String password) { this.password = password; }
-
-  public boolean getEnabled() { return enabled; }
-  public void setEnabled(boolean enabled) { this.enabled = enabled; }
-
-  public RoleGroup getRoleGroup() { return roleGroup; }
-  public void setRoleGroup(RoleGroup roleGroup) { this.roleGroup = roleGroup; }
+    @PrePersist
+    void prePersist() {
+        if (createdAt == null) createdAt = Instant.now();
+        if (roleGroup == null) roleGroup = RoleGroup.LOJA; // default opcional
+    }
 }
