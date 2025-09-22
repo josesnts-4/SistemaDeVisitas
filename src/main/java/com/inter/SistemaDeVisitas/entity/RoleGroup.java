@@ -1,2 +1,5 @@
 package com.inter.SistemaDeVisitas.entity;
-public enum RoleGroup { SUPER, ADMIN, LOJA }
+
+public enum RoleGroup {
+  ADMIN, COMERCIAL, LOJA, USER // <- garanta que USER existe
+}
