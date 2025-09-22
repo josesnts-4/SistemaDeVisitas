@@ -2,43 +2,45 @@ package com.inter.SistemaDeVisitas.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
   @Bean
-  PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
   @Bean
-  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
+    return cfg.getAuthenticationManager();
+  }
+
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
-      .cors(Customizer.withDefaults())
+      .csrf(csrf -> csrf.disable())
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/", "/login", "/register", "/img/**", "/css/**", "/js/**", "/actuator/health").permitAll()
-        .requestMatchers("/admin/**").hasRole("SUPER")
-        .requestMatchers(HttpMethod.GET, "/home").authenticated()
+        .requestMatchers("/", "/login", "/css/**", "/img/**", "/js/**").permitAll()
         .anyRequest().authenticated()
       )
-      .formLogin(form -> form
-        .loginPage("/login")
-        .loginProcessingUrl("/login")
-        .defaultSuccessUrl("/home", true)
-        .failureUrl("/login?error")
-        .permitAll()
+      .formLogin(login -> login
+        .loginPage("/login").permitAll()
+        .defaultSuccessUrl("/", true)
       )
-      // permite link <a href="/logout"> (GET). Se preferir POST, remova a linha do matcher.
-      .logout(l -> l
-        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-        .logoutSuccessUrl("/login?logout")
-        .permitAll()
+      .logout(logout -> logout
+        .logoutUrl("/logout")
+        .logoutSuccessUrl("/login?logout").permitAll()
       );
+
     return http.build();
   }
 }
