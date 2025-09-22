@@ -3,14 +3,21 @@ package com.inter.SistemaDeVisitas.security;
 import com.inter.SistemaDeVisitas.entity.User;
 import com.inter.SistemaDeVisitas.repo.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class JpaUserDetailsService implements UserDetailsService {
+
   private final UserRepository repo;
-  public JpaUserDetailsService(UserRepository repo){ this.repo = repo; }
+
+  public JpaUserDetailsService(UserRepository repo) {
+    this.repo = repo;
+  }
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -18,9 +25,13 @@ public class JpaUserDetailsService implements UserDetailsService {
         .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     String role = "ROLE_" + u.getRoleGroup().name();
     return new org.springframework.security.core.userdetails.User(
-      u.getEmail(), u.getPassword(), u.isEnabled(), true, true, true,
-      List.of(new SimpleGrantedAuthority(role))
+        u.getEmail(),
+        u.getPassword(),
+        u.isEnabled(),
+        true,
+        true,
+        true,
+        List.of(new SimpleGrantedAuthority(role))
     );
   }
 }
-
