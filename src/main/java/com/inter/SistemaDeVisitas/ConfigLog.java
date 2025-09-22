@@ -1,18 +1,19 @@
-// src/main/java/com/inter/SistemaDeVisitas/ConfigLog.java
 package com.inter.SistemaDeVisitas;
 
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 @Configuration
 public class ConfigLog {
-  @Value("${spring.datasource.url:}")  private String url;
-  @Value("${spring.datasource.username:}") private String user;
 
-  @PostConstruct
-  public void logDs() {
-    System.out.println(">> DS URL = " + url);
-    System.out.println(">> DS USER = " + user);
+  @Bean
+  public CommonsRequestLoggingFilter requestLoggingFilter() {
+    CommonsRequestLoggingFilter f = new CommonsRequestLoggingFilter();
+    f.setIncludeClientInfo(true);
+    f.setIncludeQueryString(true);
+    f.setIncludePayload(true);
+    f.setMaxPayloadLength(10000);
+    return f;
   }
 }
