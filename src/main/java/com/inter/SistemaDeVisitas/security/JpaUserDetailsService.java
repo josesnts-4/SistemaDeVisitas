@@ -1,6 +1,5 @@
 package com.inter.SistemaDeVisitas.security;
 
-import com.inter.SistemaDeVisitas.entity.RoleGroup;
 import com.inter.SistemaDeVisitas.repo.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +20,13 @@ public class JpaUserDetailsService implements UserDetailsService { // <- sem gen
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // use nome diferente p/ evitar confusão com o User do Spring
+        // use nome totalmente qualificado para evitar colisão com o User do Spring
         com.inter.SistemaDeVisitas.entity.User appUser = repo.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-        String role = "ROLE_" + appUser.getRoleGroup().name(); // SUPER/ADMIN/LOJA -> ROLE_*
+        String role = "ROLE_" + appUser.getRoleGroup().name();
 
-        // Retorne o UserDetails do Spring, NÃO a entidade JPA
+        // Retorne um UserDetails do SPRING, não a entidade JPA
         return org.springframework.security.core.userdetails.User
                 .withUsername(appUser.getEmail())
                 .password(appUser.getPassword())
