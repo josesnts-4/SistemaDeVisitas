@@ -1,16 +1,15 @@
 package com.inter.SistemaDeVisitas.security;
 
+import com.inter.SistemaDeVisitas.entity.User;
 import com.inter.SistemaDeVisitas.repo.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class JpaUserDetailsService implements UserDetailsService { // <- sem generics
+public class JpaUserDetailsService implements UserDetailsService {
 
     private final UserRepository repo;
 
@@ -20,21 +19,19 @@ public class JpaUserDetailsService implements UserDetailsService { // <- sem gen
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // use nome totalmente qualificado para evitar colisão com o User do Spring
-        com.inter.SistemaDeVisitas.entity.User appUser = repo.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+        User u = repo.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
 
-        String role = "ROLE_" + appUser.getRoleGroup().name();
+        String role = "ROLE_" + u.getRoleGroup().name();
 
-        // Retorne um UserDetails do SPRING, não a entidade JPA
-        return org.springframework.security.core.userdetails.User
-                .withUsername(appUser.getEmail())
-                .password(appUser.getPassword())
-                .authorities(new SimpleGrantedAuthority(role))
-                .accountExpired(false)
-                .accountLocked(false)
-                .credentialsExpired(false)
-                .disabled(!appUser.isEnabled())
-                .build();
+        return new org.springframework.security.core.userdetails.User(
+                u.getEmail(),
+                u.getPassword(),
+                u.isEnabled(),
+                true,
+                true,
+                true,
+                List.of(new SimpleGrantedAuthority(role))
+        );
     }
 }
