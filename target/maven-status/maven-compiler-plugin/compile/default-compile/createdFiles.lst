@@ -1,0 +1,8 @@
+com\inter\SistemaDeVisitas\repo\UserRepository.class
+com\inter\SistemaDeVisitas\security\ConfigLog.class
+com\inter\SistemaDeVisitas\SistemaDeVisitasApplication.class
+com\inter\SistemaDeVisitas\entity\RoleGroup.class
+com\inter\SistemaDeVisitas\security\JpaUserDetailsService.class
+com\inter\SistemaDeVisitas\controller\HomeController.class
+com\inter\SistemaDeVisitas\security\SecurityConfig.class
+com\inter\SistemaDeVisitas\entity\User.class
