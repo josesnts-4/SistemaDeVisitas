@@ -1,4 +1,4 @@
-package com.inter.SistemaDeVisitas.security;
+package com.inter.SistemaDeVisitas;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
