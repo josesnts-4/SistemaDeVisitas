@@ -60,19 +60,19 @@
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
-    <!-- Flyway (migrações) -->
+    <!-- Flyway (migraÃ§Ãµes) -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
-    <!-- Extensão específica do Postgres (necessária no Flyway 10+) -->
+    <!-- ExtensÃ£o especÃ­fica do Postgres (necessÃ¡ria no Flyway 10+) -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-database-postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Lombok (opcional; requer anotações @Getter/@Setter na entidade User) -->
+    <!-- Lombok (opcional; requer anotaÃ§Ãµes @Getter/@Setter na entidade User) -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -114,9 +114,9 @@
   <profile>
     <id>production</id>
     <properties>
-      <!-- pula testes no build de produção -->
+      <!-- pula testes no build de produÃ§Ã£o -->
       <maven.test.skip>true</maven.test.skip>
-      <!-- força Java 21 no profile, se quiser -->
+      <!-- forÃ§a Java 21 no profile, se quiser -->
       <maven.compiler.release>21</maven.compiler.release>
     </properties>
     <build>
