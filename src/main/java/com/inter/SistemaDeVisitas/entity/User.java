@@ -22,7 +22,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, length=16)
-    private RoleGroup roleGroup = RoleGroup.LOJA; // valor padrão
+    private RoleGroup roleGroup = RoleGroup.LOJA; // <- DEFAULT VÁLIDO
 
     @Column(nullable=false)
     private boolean enabled = true;
