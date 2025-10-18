@@ -13,14 +13,23 @@
 }
 
 /* Bolinha com “logo” SV (placeholder) */
-.brand-circle{
-  width: 64px; height: 64px;
+.brand-circle {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background: var(--sv-green);
-  display:flex; align-items:center; justify-content:center;
-  color:#fff; font-weight:700; letter-spacing:1px;
-  box-shadow: 0 8px 18px rgba(46,139,87,.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(46, 139, 87, .25);
+
+  /* Aqui entram as linhas novas */
+  background-image: url('F:\SistemaDeVisitass\src\main\resources\static\css\Gemini_Generated_Image_ytdpcaytdpcaytdp-removebg-preview.png');
+  background-size: cover; /* faz a imagem cobrir o círculo */
+  background-position: center; /* centraliza a logo */
+  background-repeat: no-repeat; /* evita que se repita */
 }
+
 
 /* Barra “OU” */
 .divider::before, .divider::after{
